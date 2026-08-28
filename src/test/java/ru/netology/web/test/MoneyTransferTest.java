@@ -59,4 +59,90 @@ public class MoneyTransferTest {
                 secondBalanceAfter
         );
     }
+
+    @Test
+    void shouldTransferMoneyFromSecondCardToFirst() {
+
+        open("http://localhost:9999");
+
+        var loginPage = new LoginPage();
+
+        var authInfo = DataHelper.getAuthInfo();
+
+        var verificationPage =
+                loginPage.validLogin(authInfo);
+
+        var dashboardPage =
+                verificationPage.validVerify("12345");
+
+        var firstCard = DataHelper.getFirstCard();
+        var secondCard = DataHelper.getSecondCard();
+
+        var firstBalanceBefore =
+                dashboardPage.getCardBalance(firstCard);
+
+        var secondBalanceBefore =
+                dashboardPage.getCardBalance(secondCard);
+
+        var transferPage =
+                dashboardPage.selectCard(firstCard);
+
+        transferPage.transfer(secondCard, 1000);
+
+        var firstBalanceAfter =
+                dashboardPage.getCardBalance(firstCard);
+
+        var secondBalanceAfter =
+                dashboardPage.getCardBalance(secondCard);
+
+        assertEquals(
+                firstBalanceBefore + 1000,
+                firstBalanceAfter
+        );
+
+        assertEquals(
+                secondBalanceBefore - 1000,
+                secondBalanceAfter
+        );
+    }
+
+    //Перевод суммы больше баланса
+    @Test
+    void shouldNotTransferMoneyMoreThanBalance() {
+
+        open("http://localhost:9999");
+
+        var loginPage = new LoginPage();
+
+        var authInfo = DataHelper.getAuthInfo();
+
+        var verificationPage =
+                loginPage.validLogin(authInfo);
+
+        var dashboardPage =
+                verificationPage.validVerify("12345");
+
+        var firstCard = DataHelper.getFirstCard();
+        var secondCard = DataHelper.getSecondCard();
+
+        var firstBalanceBefore =
+                dashboardPage.getCardBalance(firstCard);
+
+        var secondBalanceBefore =
+                dashboardPage.getCardBalance(secondCard);
+
+        var transferPage =
+                dashboardPage.selectCard(secondCard);
+
+        transferPage.transfer(firstCard, 11000);
+
+        var firstBalanceAfter =
+                dashboardPage.getCardBalance(firstCard);
+
+        var secondBalanceAfter =
+                dashboardPage.getCardBalance(secondCard);
+
+        assertEquals(firstBalanceBefore, firstBalanceAfter);
+        assertEquals(secondBalanceBefore, secondBalanceAfter);
+    }
 }

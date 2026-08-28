@@ -6,6 +6,7 @@ import ru.netology.web.data.DataHelper;
 
 import static com.codeborne.selenide.Selenide.$;
 
+
 public class TransferPage {
 
     private final SelenideElement amountField =
@@ -45,4 +46,6 @@ public class TransferPage {
     public void cancel() {
         cancelButton.click();
     }
+
+
 }
