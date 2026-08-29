@@ -1,23 +1,13 @@
 package ru.netology.web.data;
 
+import lombok.Value;
+
 public class DataHelper {
 
+    @Value
     public static class AuthInfo {
-        private final String login;
-        private final String password;
-
-        public AuthInfo(String login, String password) {
-            this.login = login;
-            this.password = password;
-        }
-
-        public String getLogin() {
-            return login;
-        }
-
-        public String getPassword() {
-            return password;
-        }
+        String login;
+        String password;
     }
 
     public static AuthInfo getAuthInfo() {
@@ -27,23 +17,10 @@ public class DataHelper {
         );
     }
 
-
+    @Value
     public static class CardInfo {
-        private final String number;
-        private final String testId;
-
-        public CardInfo(String number, String testId) {
-            this.number = number;
-            this.testId = testId;
-        }
-
-        public String getNumber() {
-            return number;
-        }
-
-        public String getTestId() {
-            return testId;
-        }
+        String number;
+        String testId;
     }
 
     public static CardInfo getFirstCard() {
@@ -59,4 +36,9 @@ public class DataHelper {
                 "0f3f5c2a-249e-4c3d-8287-09f7a039391d"
         );
     }
+
+    public static String getVerificationCode() {
+        return "12345";
+    }
+
 }

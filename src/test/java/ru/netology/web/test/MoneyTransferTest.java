@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import ru.netology.web.data.DataHelper;
 import ru.netology.web.page.DashboardPage;
 import ru.netology.web.page.LoginPage;
-import ru.netology.web.page.TransferPage;
 
 import static com.codeborne.selenide.Selenide.open;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,25 +23,28 @@ public class MoneyTransferTest {
                 loginPage.validLogin(authInfo);
 
         var dashboardPage =
-                verificationPage.validVerify("12345");
+                verificationPage.validVerify(
+                        DataHelper.getVerificationCode()
+                );
 
         var firstCard = DataHelper.getFirstCard();
         var secondCard = DataHelper.getSecondCard();
 
-        // Запоминаем баланс карт ДО перевода
         var firstBalanceBefore =
                 dashboardPage.getCardBalance(firstCard);
 
         var secondBalanceBefore =
                 dashboardPage.getCardBalance(secondCard);
 
-        // Переводим 1000 рублей с первой карты на вторую
+        // Переводим половину текущего баланса первой карты
+        var amount = firstBalanceBefore / 2;
+
         var transferPage =
                 dashboardPage.selectCard(secondCard);
 
-        transferPage.transfer(firstCard, 1000);
+        dashboardPage =
+                transferPage.transfer(firstCard, amount);
 
-        // Проверяем баланс карт ПОСЛЕ перевода
         var firstBalanceAfter =
                 dashboardPage.getCardBalance(firstCard);
 
@@ -50,12 +52,12 @@ public class MoneyTransferTest {
                 dashboardPage.getCardBalance(secondCard);
 
         assertEquals(
-                firstBalanceBefore - 1000,
+                firstBalanceBefore - amount,
                 firstBalanceAfter
         );
 
         assertEquals(
-                secondBalanceBefore + 1000,
+                secondBalanceBefore + amount,
                 secondBalanceAfter
         );
     }
@@ -73,7 +75,9 @@ public class MoneyTransferTest {
                 loginPage.validLogin(authInfo);
 
         var dashboardPage =
-                verificationPage.validVerify("12345");
+                verificationPage.validVerify(
+                        DataHelper.getVerificationCode()
+                );
 
         var firstCard = DataHelper.getFirstCard();
         var secondCard = DataHelper.getSecondCard();
@@ -84,10 +88,14 @@ public class MoneyTransferTest {
         var secondBalanceBefore =
                 dashboardPage.getCardBalance(secondCard);
 
+        // Переводим половину текущего баланса второй карты
+        var amount = secondBalanceBefore / 2;
+
         var transferPage =
                 dashboardPage.selectCard(firstCard);
 
-        transferPage.transfer(secondCard, 1000);
+        dashboardPage =
+                transferPage.transfer(secondCard, amount);
 
         var firstBalanceAfter =
                 dashboardPage.getCardBalance(firstCard);
@@ -96,17 +104,16 @@ public class MoneyTransferTest {
                 dashboardPage.getCardBalance(secondCard);
 
         assertEquals(
-                firstBalanceBefore + 1000,
+                firstBalanceBefore + amount,
                 firstBalanceAfter
         );
 
         assertEquals(
-                secondBalanceBefore - 1000,
+                secondBalanceBefore - amount,
                 secondBalanceAfter
         );
     }
 
-    //Перевод суммы больше баланса
     @Test
     void shouldNotTransferMoneyMoreThanBalance() {
 
@@ -120,7 +127,9 @@ public class MoneyTransferTest {
                 loginPage.validLogin(authInfo);
 
         var dashboardPage =
-                verificationPage.validVerify("12345");
+                verificationPage.validVerify(
+                        DataHelper.getVerificationCode()
+                );
 
         var firstCard = DataHelper.getFirstCard();
         var secondCard = DataHelper.getSecondCard();
@@ -131,10 +140,14 @@ public class MoneyTransferTest {
         var secondBalanceBefore =
                 dashboardPage.getCardBalance(secondCard);
 
+        // Пытаемся перевести сумму больше текущего баланса
+        var amount = firstBalanceBefore + 1;
+
         var transferPage =
                 dashboardPage.selectCard(secondCard);
 
-        transferPage.transfer(firstCard, 11000);
+        dashboardPage =
+                transferPage.transfer(firstCard, amount);
 
         var firstBalanceAfter =
                 dashboardPage.getCardBalance(firstCard);
@@ -142,7 +155,16 @@ public class MoneyTransferTest {
         var secondBalanceAfter =
                 dashboardPage.getCardBalance(secondCard);
 
-        assertEquals(firstBalanceBefore, firstBalanceAfter);
-        assertEquals(secondBalanceBefore, secondBalanceAfter);
+        assertEquals(
+                firstBalanceBefore,
+                firstBalanceAfter
+        );
+
+        assertEquals(
+                secondBalanceBefore,
+                secondBalanceAfter
+        );
     }
+
+
 }
